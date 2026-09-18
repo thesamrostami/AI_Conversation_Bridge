@@ -3,7 +3,7 @@
   "name": "AI Conversation Bridge",
   "short_name": "ConvBridge",
   "description": "Save, search, export and organise your AI chat conversations locally, and hand a chat off from one assistant to another.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minimum_chrome_version": "116",
   "homepage_url": "https://github.com/thesamrostami/AI_Conversation_Bridge",
   "icons": {

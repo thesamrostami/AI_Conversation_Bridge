@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+No functional changes and no new permissions. Adds a "Source code" button in Settings → About and the repository link on `chrome://extensions`, now that the project is open source.
+
 ## 1.0.1
 
 No new permissions. The `activeTab` permission was dropped (the host permissions already cover the supported sites), so existing users update silently.

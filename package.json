@@ -7,10 +7,10 @@
   "description": "Chrome extension: save, search, export and hand off AI chats. No build step.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thesamrostami/conversation-bridge-1.0.1.git"
+    "url": "https://github.com/thesamrostami/AI_Conversation_Bridge.git"
   },
-  "homepage": "https://github.com/thesamrostami/conversation-bridge-1.0.1",
-  "bugs": "https://github.com/thesamrostami/conversation-bridge-1.0.1/issues",
+  "homepage": "https://github.com/thesamrostami/AI_Conversation_Bridge",
+  "bugs": "https://github.com/thesamrostami/AI_Conversation_Bridge/issues",
   "scripts": {
     "check": "node tools/check.mjs",
     "test": "node tools/test-lib.mjs",

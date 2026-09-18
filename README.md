@@ -24,6 +24,8 @@ conversation-bridge-1.0.0/
 
 ## Develop
 
+The same three checks run in GitHub Actions on every push and pull request (`.github/workflows/check.yml`), which also uploads the packaged zip as a build artifact.
+
 ```bash
 npm run check        # syntax-check every JS file
 npm test             # functional tests for the library modules (node tools/test-lib.mjs)

@@ -254,6 +254,7 @@ function renderAbout() {
       { class: 'row wrap', style: { gap: '6px', marginTop: '8px' } },
       button({ label: 'Welcome tour', iconName: 'sparkles', className: 'btn sm ghost', onClick: () => chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') }) }),
       button({ label: 'Privacy', iconName: 'shield', className: 'btn sm ghost', onClick: () => chrome.tabs.create({ url: chrome.runtime.getURL('docs/privacy.html') }) }),
+      m.homepage_url ? button({ label: 'Source code', iconName: 'externalLink', className: 'btn sm ghost', onClick: () => chrome.tabs.create({ url: m.homepage_url }) }) : null,
     ),
   );
 }

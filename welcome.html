@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome to Conversation Bridge</title>
+    <link rel="icon" href="icons/icon32.png" />
+    <link rel="stylesheet" href="styles/panel.css" />
+    <style>
+      body {
+        background: var(--bg);
+      }
+      .page {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+      .hero {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 8px;
+      }
+      .hero img {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+      .hero p {
+        margin: 4px 0 0;
+        color: var(--fg-muted);
+        font-size: 15px;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin: 28px 0;
+      }
+      .step {
+        background: var(--bg-elev);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+      .step .num {
+        display: inline-flex;
+        width: 26px;
+        height: 26px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--accent-fg);
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      .step h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+      }
+      .step p {
+        margin: 0;
+        color: var(--fg-muted);
+        font-size: 13px;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 8px 0 28px;
+      }
+      .cta .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 24px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 13.5px;
+      }
+      .features li {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .features li::before {
+        content: "✓";
+        color: var(--ok);
+        font-weight: 700;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 32px 0 12px;
+      }
+      table.keys {
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      table.keys td {
+        padding: 6px 18px 6px 0;
+      }
+      .fine {
+        color: var(--fg-muted);
+        font-size: 12.5px;
+        margin-top: 32px;
+      }
+      @media (max-width: 640px) {
+        .steps,
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="hero">
+        <img src="icons/icon128.png" alt="" />
+        <div>
+          <h1>Conversation Bridge is ready</h1>
+          <p>Save, search, export and hand off your AI chats — entirely on your machine.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <span class="num">1</span>
+          <h3>Open a chat</h3>
+          <p>Go to ChatGPT, Claude, Gemini or Perplexity and open any conversation.</p>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <h3>Click the icon</h3>
+          <p>Pin Conversation Bridge to the toolbar and click it. The side panel reads the chat instantly.</p>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <h3>Copy, save or transfer</h3>
+          <p>Export clean Markdown, keep a searchable library, or send the context to another assistant.</p>
+        </div>
+      </div>
+
+      <div class="cta">
+        <button class="btn primary" id="open-panel">Open the side panel</button>
+        <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
+        <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude</a>
+        <a class="btn" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
+        <a class="btn" href="https://www.perplexity.ai/" target="_blank" rel="noopener">Open Perplexity</a>
+      </div>
+
+      <h2>What you get</h2>
+      <ul class="features">
+        <li>Clean Markdown with code fences, tables, lists, links and math preserved</li>
+        <li>Markdown, plain text, JSON, HTML and PDF exports</li>
+        <li>A local library with full-text search, tags, notes and favorites</li>
+        <li>One-click hand-off of a chat to another assistant</li>
+        <li>Workflows that bundle related chats into a shared context packet</li>
+        <li>Prompt templates you can append to any export or transfer</li>
+        <li>Backups and imports — including official ChatGPT and Claude exports</li>
+        <li>Everything stays in your browser. No account, no server, no tracking.</li>
+      </ul>
+
+      <h2>Keyboard shortcuts</h2>
+      <table class="keys">
+        <tr><td><span class="kbd">Alt/⌥ + Shift + B</span></td><td>Open the side panel</td></tr>
+        <tr><td><span class="kbd">Alt/⌥ + Shift + C</span></td><td>Copy the current chat as Markdown</td></tr>
+        <tr><td><span class="kbd">Alt/⌥ + Shift + S</span></td><td>Save the current chat to the library</td></tr>
+      </table>
+      <p class="fine">Shortcuts can be changed at <code>chrome://extensions/shortcuts</code>. Tip: right-click any chat page for quick “Save” and “Copy” actions.</p>
+
+      <p class="fine">Upgrading from an earlier version? Your saved conversations, prompts and workflows were migrated automatically.</p>
+    </main>
+    <script type="module" src="src/ui/welcome.js"></script>
+  </body>
+</html>

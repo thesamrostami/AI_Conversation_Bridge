@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- resolve assets from the repo root, exactly as the extension root would (icons/, styles/, src/) -->
+<base href="../../">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversation Bridge — panel dev harness</title>
+<link rel="stylesheet" href="styles/panel.css">
+<style>
+  html, body { background: #888; }
+  #frame { width: 380px; min-height: 100vh; margin: 0 auto; background: var(--bg); box-shadow: 0 0 0 1px #000; }
+  #frame #app { min-height: 100vh; }
+  /* ?embed=1 — rendered inside tools/marketing/hero.html */
+  html.embed, html.embed body { background: var(--bg); }
+  html.embed #frame { width: 100%; box-shadow: none; }
+</style>
+<script>
+  // Collect runtime errors into the DOM so a headless run (--dump-dom) can see them.
+  window.__errors = [];
+  const logError = (msg) => {
+    window.__errors.push(String(msg));
+    let el = document.getElementById('errors');
+    if (!el) {
+      el = document.createElement('pre');
+      el.id = 'errors';
+      el.hidden = true;
+      document.documentElement.appendChild(el);
+    }
+    el.textContent = window.__errors.join('\n');
+  };
+  window.addEventListener('error', (e) => logError(e.message));
+  window.addEventListener('unhandledrejection', (e) => logError(e.reason?.stack ?? e.reason));
+  // ---- chrome.* mock so the panel runs as a plain page ----
+  const mem = new Map(JSON.parse(localStorage.getItem('cb-mock') ?? '[]'));
+  const persist = () => localStorage.setItem('cb-mock', JSON.stringify([...mem]));
+  const listeners = { storage: [], message: [] };
+  const clone = (v) => JSON.parse(JSON.stringify(v));
+  const sample = () => ({
+    title: 'Designing a rate limiter for a public API',
+    platform: 'chatgpt',
+    url: 'https://chatgpt.com/c/demo-123',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    captureLevel: 'quick',
+    tags: [],
+    notes: '',
+    messages: [
+      { id: 'm1', role: 'user', content: 'How should I design a **token bucket** rate limiter for a public API with ~10k req/s?' },
+      { id: 'm2', role: 'assistant', content: 'Here is a compact design:\n\n1. Keep a bucket per API key in Redis\n2. Refill lazily on each request\n3. Reject with `429` when empty\n\n```python\ndef allow(key, rate, burst):\n    now = time.time()\n    tokens, last = redis.hmget(key, "t", "ts")\n    tokens = min(burst, tokens + (now - last) * rate)\n    if tokens < 1:\n        return False\n    redis.hmset(key, {"t": tokens - 1, "ts": now})\n    return True\n```\n\n| Option | Pros | Cons |\n| --- | --- | --- |\n| Token bucket | Bursty-friendly | Needs state |\n| Sliding window | Precise | More memory |\n\n> Tip: use Lua scripts for atomicity.' },
+      { id: 'm3', role: 'user', content: 'What about distributed consistency across regions?' },
+      { id: 'm4', role: 'assistant', content: 'Use **local buckets** with periodic reconciliation, or accept eventual consistency. See [this paper](https://example.com/paper) for details.' },
+    ],
+  });
+  window.chrome = {
+    runtime: {
+      getURL: (p) => p,
+      getManifest: () => ({ name: 'Conversation Bridge', version: '1.0.0-dev', content_scripts: [{ matches: ['https://chatgpt.com/*'] }] }),
+      sendMessage: async (msg) => {
+        await new Promise((r) => setTimeout(r, 120));
+        switch (msg.type) {
+          case 'GET_CURRENT_CONVERSATION': return { ok: true, data: sample() };
+          case 'DEEP_SCAN_CONVERSATION': { const c = sample(); c.messages.push({ id: 'm5', role: 'user', content: 'Extra message found by deep scan' }); c.captureLevel = 'full'; return { ok: true, data: c }; }
+          case 'TRANSFER_TO_LLM': return { ok: true, data: { sent: msg.autoSend } };
+          case 'INSERT_INTO_ACTIVE_TAB': return { ok: true, data: { sent: false } };
+          default: return { ok: true };
+        }
+      },
+      onMessage: { addListener: (fn) => listeners.message.push(fn) },
+    },
+    storage: {
+      local: {
+        async get(keys) {
+          if (keys === null || keys === undefined) return Object.fromEntries(clone([...mem]));
+          const list = Array.isArray(keys) ? keys : [keys];
+          return Object.fromEntries(list.filter((k) => mem.has(k)).map((k) => [k, clone(mem.get(k))]));
+        },
+        async set(obj) { for (const [k, v] of Object.entries(obj)) mem.set(k, clone(v)); persist(); },
+        async remove(keys) { for (const k of Array.isArray(keys) ? keys : [keys]) mem.delete(k); persist(); },
+        async getBytesInUse() { return JSON.stringify([...mem]).length; },
+      },
+      session: { async get() { return {}; }, async set() {}, async remove() {} },
+      onChanged: { addListener: (fn) => listeners.storage.push(fn) },
+    },
+    tabs: { create: async (o) => { console.log('[mock] tabs.create', o.url); return { id: 1 }; } },
+    downloads: { download: async (o) => { console.log('[mock] download', o.filename); return 1; } },
+  };
+</script>
+</head>
+<body>
+<div id="frame"><div id="app"></div></div>
+<script type="module">
+  // Query params (all optional):
+  //   seed=demo        populate the mock store from demo-seed.js (replaces whatever is there)
+  //   embed=1          plain background, no frame outline (used by tools/marketing/hero.html)
+  //   view=<tab>       handled by app.js itself
+  //   open=<id|url>    open the reader for a saved conversation once the panel has booted
+  //   workspace=<id>   preselect a workflow;  select=all  ticks every chat in it
+  //   collapse=1       fold the reader's "Tags, notes & organisation" panel
+  const params = new URLSearchParams(location.search);
+  if (params.get('embed') === '1') document.documentElement.classList.add('embed');
+  if (params.get('seed') === 'demo') {
+    const { seedDemo } = await import('./tools/fixtures/demo-seed.js');
+    await seedDemo();
+  }
+  const app = await import('./src/ui/app.js');
+  const booted = () => new Promise((r) => {
+    const t = setInterval(() => { if (app.state.index.length || document.getElementById('view')) { clearInterval(t); r(); } }, 20);
+  });
+  await booted();
+  await new Promise((r) => setTimeout(r, 200)); // let init()'s own reload()+render() land first
+  const ws = params.get('workspace');
+  if (ws) {
+    app.state.workflow.workspaceId = ws;
+    if (params.get('select') === 'all') app.state.workflow.selected = new Set(app.state.index.filter((m) => m.workspaceId === ws).map((m) => m.id));
+    app.render();
+  }
+  const open = params.get('open');
+  if (open) {
+    const { idForUrl } = await import('./src/lib/storage.js');
+    await app.openReader(open.startsWith('http') ? idForUrl(open) : open);
+    if (params.get('collapse') === '1') document.querySelectorAll('details.collapsible').forEach((d) => (d.open = false));
+  }
+</script>
+</body>
+</html>

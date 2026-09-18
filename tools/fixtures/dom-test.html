@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Conversation Bridge — DOM extraction fixture</title>
+<style>
+  body { font-family: system-ui; margin: 20px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  pre { background: #eee; padding: 8px; }
+  section { border: 1px solid #ccc; margin: 16px 0; padding: 12px; }
+  textarea.out { width: 100%; height: 260px; font: 12px/1.4 monospace; }
+</style>
+</head>
+<body>
+<h1>Extraction fixture</h1>
+
+<!-- ============ ChatGPT-like ============ -->
+<section id="chatgpt">
+<div>
+<article data-testid="conversation-turn-1">
+  <h5 class="sr-only">You said:</h5>
+  <div data-message-author-role="user" data-message-id="u1">
+    <div class="whitespace-pre-wrap">Write a python function
+that adds two numbers</div>
+  </div>
+</article>
+<article data-testid="conversation-turn-2">
+  <h6 class="sr-only">ChatGPT said:</h6>
+  <div data-message-author-role="assistant" data-message-id="a1">
+    <div class="markdown prose">
+      <p>Here is a <strong>simple</strong> function:</p>
+      <pre class="!overflow-visible"><div class="contain-inline-size rounded-md border"><div class="flex items-center text-token-text-secondary px-4 py-2 text-xs font-sans">python</div><div class="sticky top-9"><div class="absolute bottom-0 right-0 flex h-9 items-center pr-2"><div class="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs"><button class="flex gap-1 items-center select-none py-1" aria-label="Copy"><svg></svg>Copy code</button></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-python"><span>def add(a, b):
+    return a + b</span></code></div></div></pre>
+      <ul><li><p>Item <em>one</em></p></li><li><p>Item two</p><ul><li>nested <code>inline</code></li></ul></li></ul>
+      <ol start="3"><li>three</li><li>four</li></ol>
+      <table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2 | pipe</td></tr></tbody></table>
+      <blockquote><p>quoted text</p></blockquote>
+      <p>Inline <code>x = 1</code> and math <span class="katex"><span class="katex-mathml"><math><semantics><mrow></mrow><annotation encoding="application/x-tex">E=mc^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true">E=mc2</span></span> done.</p>
+      <p>Link: <a href="https://example.com/x" target="_blank">Example</a> and <a href="/relative">rel</a></p>
+      <h3>Heading</h3>
+      <hr>
+      <ol><li><p>Install it:</p><pre><div class="contain-inline-size"><div class="flex items-center px-4 py-2 text-xs">bash</div><div class="overflow-y-auto p-4"><code class="language-bash">npm install foo
+npm run build</code></div></div></pre></li><li><p>Run it and <code>2 * 3 * 4</code></p></li></ol>
+      <blockquote><p>Quoted with code:</p><pre><code class="language-js">const x = 1;
+const y = 2;</code></pre></blockquote>
+      <p>Bye</p>
+    </div>
+    <div class="flex"><button aria-label="Copy">Copy</button><button>Good response</button></div>
+  </div>
+</article>
+</div>
+</section>
+
+<!-- ============ Claude-like ============ -->
+<section id="claude">
+<div data-test-render-count="1"><div data-testid="user-message" class="font-user-message"><p class="whitespace-pre-wrap">Hi Claude
+second line</p></div></div>
+<div data-test-render-count="2"><div data-is-streaming="false"><div class="font-claude-message"><p>Hello! Here's code:</p><pre><div class="relative"><div class="text-text-300 absolute pl-3 pt-2.5 text-xs">javascript</div><div class="pointer-events-none sticky"><div class="absolute right-0"><button>Copy</button></div></div><div><code class="language-javascript"><span>console.log(1)</span></code></div></div></pre><p>Done.</p></div></div></div>
+</section>
+
+<!-- ============ Gemini-like ============ -->
+<section id="gemini">
+<user-query><div class="query-content"><span class="user-query-bubble-with-background"><div class="query-text"><p class="query-text-line">What is 2+2?</p></div></span></div></user-query>
+<model-response><div class="response-container"><message-content class="model-response-text"><div class="markdown markdown-main-panel"><p>It's <strong>4</strong>.</p><code-block><div class="code-block"><div class="code-block-decoration header-formatted gds-title-s"><span>Python</span><div class="buttons"><button>Copy</button></div></div><div class="formatted-code-block-internal-container"><div class="animated-opacity"><pre><code role="text">print(4)</code></pre></div></div></div></code-block></div></message-content><div class="response-container-footer"><button>Like</button></div></div></model-response>
+</section>
+
+<!-- ============ Perplexity-like ============ -->
+<section id="perplexity">
+<main>
+  <div class="group"><h1 class="query-text">What is a token bucket?</h1></div>
+  <div class="prose"><p>A token bucket is a rate-limiting algorithm.</p></div>
+  <h2>Related</h2>
+  <h2>Sources</h2>
+</main>
+</section>
+
+<textarea class="out" id="out" readonly></textarea>
+<!-- machine-readable copy for tools/test-dom.mjs (a textarea's value is not serialised by --dump-dom) -->
+<pre id="result" hidden></pre>
+<script src="../../src/content.js"></script>
+<script>
+  const cb = window.__conversationBridge;
+  const out = [];
+  const md = (sel) => cb.toMarkdown(document.querySelector(sel));
+  out.push('### CHATGPT USER\n' + md('#chatgpt [data-message-author-role="user"]'));
+  out.push('### CHATGPT ASSISTANT\n' + md('#chatgpt [data-message-author-role="assistant"]'));
+  out.push('### CLAUDE USER\n' + md('#claude [data-testid="user-message"]'));
+  out.push('### CLAUDE ASSISTANT\n' + md('#claude .font-claude-message'));
+  const gemini = cb.adapters.find((a) => a.id === 'gemini');
+  out.push('### GEMINI USER\n' + cb.toMarkdown(gemini.contentRoot(document.querySelector('#gemini user-query'))));
+  out.push('### GEMINI ASSISTANT\n' + cb.toMarkdown(gemini.contentRoot(document.querySelector('#gemini model-response'))));
+  const chatgpt = cb.adapters.find((a) => a.id === 'chatgpt');
+  const msgs = cb.turnsToMessages(chatgpt.turns(), chatgpt);
+  out.push('### CHATGPT TURNS ' + msgs.length + ' ' + msgs.map((m) => m.role).join(','));
+  // Perplexity: the query element is a turn, the page's own "Related"/"Sources" headings are not
+  const perplexity = cb.adapters.find((a) => a.id === 'perplexity');
+  const pturns = perplexity.turns();
+  out.push('### PERPLEXITY TURNS ' + pturns.map((t) => t.role + ':' + t.el.textContent.trim().slice(0, 24)).join(' | '));
+  // deep-scan window merge keeps repeated identical messages apart
+  const w1 = [{ role: 'user', content: 'ok' }, { role: 'assistant', content: 'a1' }, { role: 'user', content: 'ok' }];
+  const w2 = [{ role: 'user', content: 'ok' }, { role: 'assistant', content: 'a2' }];
+  out.push('### MERGE ' + cb.mergeWindow(cb.mergeWindow([], w1), w2).map((m) => m.content).join(' '));
+  const result = out.join('\n\n');
+  document.getElementById('out').value = result;
+  document.getElementById('result').textContent = result;
+  window.__result = result;
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "conversation-bridge",
+  "version": "1.0.1",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension: save, search, export and hand off AI chats. No build step.",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "test": "node tools/test-lib.mjs",
+    "test:dom": "node tools/test-dom.mjs",
+    "zip": "python tools/build-zip.py"
+  }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conversation Bridge — Privacy Policy</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1c1917; }
+      h1 { font-size: 24px; } h2 { font-size: 17px; margin-top: 28px; }
+      @media (prefers-color-scheme: dark) { body { background: #121110; color: #f2efea; } }
+    </style>
+  </head>
+  <body>
+    <h1>Privacy Policy — Conversation Bridge</h1>
+    <p><em>Last updated: September 2026</em></p>
+    <p>Conversation Bridge is a browser extension that saves, organises and exports AI chat conversations. It is designed to work entirely on your device.</p>
+
+    <h2>What the extension accesses</h2>
+    <ul>
+      <li><strong>Chat pages you open</strong> on chatgpt.com, chat.openai.com, claude.ai, gemini.google.com and perplexity.ai. The extension reads the conversation text shown on the page only when you use one of its features (capture, copy, save, transfer, live sync).</li>
+      <li><strong>Your clipboard</strong>, only to copy text you asked to copy.</li>
+      <li><strong>Your Downloads folder</strong>, only to save files you asked to export.</li>
+    </ul>
+
+    <h2>Where your data is stored</h2>
+    <p>Saved conversations, notes, tags, workflows, prompts and settings are stored locally in your browser profile using <code>chrome.storage.local</code>. They are never uploaded to any server operated by us. You can export a full backup or delete everything at any time from the Settings tab.</p>
+
+    <h2>Network requests</h2>
+    <p>The extension makes no network requests of its own. There is no licensing, update check, or any other call to a server operated by us.</p>
+    <p>The “Transfer” feature opens a new tab on the assistant you choose and pastes text into its composer. From that point on, the assistant’s own privacy policy applies to what you send.</p>
+
+    <h2>Analytics and tracking</h2>
+    <p>None. The extension contains no analytics, telemetry, advertising or fingerprinting code.</p>
+
+    <h2>Permissions explained</h2>
+    <ul>
+      <li><code>storage</code>, <code>unlimitedStorage</code> — keep your library on your device.</li>
+      <li><code>scripting</code> and host permissions for the chat sites — read the conversation on the page and paste into the composer.</li>
+      <li><code>sidePanel</code> — show the panel.</li>
+      <li><code>clipboardWrite</code> — copy exports.</li>
+      <li><code>downloads</code> — save exports to your Downloads folder.</li>
+      <li><code>contextMenus</code> — right-click “Save” / “Copy” actions.</li>
+    </ul>
+
+  </body>
+</html>

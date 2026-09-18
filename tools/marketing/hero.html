@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Conversation Bridge — marketing frame</title>
+<!--
+  Rendered by tools/make-marketing.py with headless Chrome. Serve the repo root over http first
+  (python -m http.server 8765) — the panel is ES modules and will not load from file://.
+
+  Query params:
+    w, h        canvas size (default 1920×1080); all type sizes scale with w
+    view        panel tab: capture | library | workflows | prompts | settings
+    open        conversation id or URL to open in the reader
+    workspace   workflow id to preselect;  select=all ticks every chat in it
+    collapse    1 folds the reader's organisation panel so messages are visible
+    scale       panel zoom (default 1.15)
+    title       headline; "|" breaks lines, *word* gets the gradient
+    sub         tagline (plain text)
+    pills       0 hides the platform pills
+-->
+<style>
+  :root {
+    --k: 1;
+    --ink: #1e1b3a;
+    --ink-2: #3b3950;
+    --grad: linear-gradient(92deg, #6d4ff0 0%, #4f6cf0 55%, #3b82f6 100%);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    position: relative;
+    overflow: hidden;
+    width: 1920px;
+    height: 1080px;
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(112deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 64%),
+      linear-gradient(160deg, #e2e0f3 0%, #eae8f7 48%, #e4e2f4 100%);
+    -webkit-font-smoothing: antialiased;
+  }
+  .copy {
+    position: absolute;
+    left: calc(180px * var(--k));
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: calc(760px * var(--k));
+  }
+  .copy img {
+    width: calc(144px * var(--k));
+    height: calc(144px * var(--k));
+    border-radius: calc(32px * var(--k));
+    display: block;
+    margin-bottom: calc(40px * var(--k));
+    box-shadow: 0 calc(18px * var(--k)) calc(50px * var(--k)) rgba(60, 50, 140, 0.18);
+  }
+  h1 {
+    margin: 0 0 calc(30px * var(--k));
+    font-size: calc(78px * var(--k));
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+  }
+  h1 .grad {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    margin: 0 0 calc(38px * var(--k));
+    font-size: calc(34px * var(--k));
+    line-height: 1.32;
+    color: var(--ink-2);
+    max-width: calc(620px * var(--k));
+  }
+  .pills { display: flex; flex-wrap: wrap; gap: calc(14px * var(--k)); }
+  .pill {
+    padding: calc(10px * var(--k)) calc(22px * var(--k));
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(80, 70, 150, 0.16);
+    font-size: calc(23px * var(--k));
+    color: #2f2d45;
+    box-shadow: 0 2px 8px rgba(60, 50, 140, 0.06);
+  }
+  .device {
+    position: absolute;
+    right: calc(234px * var(--k));
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgba(30, 27, 58, 0.08);
+    box-shadow: 0 40px 90px rgba(40, 30, 90, 0.20), 0 4px 14px rgba(40, 30, 90, 0.08);
+    overflow: hidden;
+  }
+  .device iframe { display: block; border: 0; width: 380px; background: #fff; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <img id="icon" src="../../icons/icon512.png" alt="">
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+    <div class="pills" id="pills"></div>
+  </div>
+  <div class="device"><iframe id="panel" title="Conversation Bridge side panel"></iframe></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const w = Number(q.get('w')) || 1920;
+  const h = Number(q.get('h')) || 1080;
+  const k = w / 1920;
+  document.documentElement.style.setProperty('--k', k);
+  document.body.style.width = `${w}px`;
+  document.body.style.height = `${h}px`;
+
+  const title = q.get('title') ?? 'AI Conversation|*Bridge*';
+  const titleEl = document.getElementById('title');
+  title.split('|').forEach((line, i) => {
+    if (i) titleEl.append(document.createElement('br'));
+    line.split(/(\*[^*]+\*)/).forEach((part) => {
+      if (!part) return;
+      if (part.startsWith('*')) {
+        const span = document.createElement('span');
+        span.className = 'grad';
+        span.textContent = part.slice(1, -1);
+        titleEl.append(span);
+      } else {
+        titleEl.append(part);
+      }
+    });
+  });
+  document.getElementById('sub').textContent = q.get('sub') ?? 'Save, export, organise and hand off AI chats — free, 100% local, no account.';
+  const pills = document.getElementById('pills');
+  if (q.get('pills') === '0') pills.remove();
+  else ['ChatGPT', 'Claude', 'Gemini', 'Perplexity'].forEach((p) => pills.append(Object.assign(document.createElement('span'), { className: 'pill', textContent: p })));
+
+  // panel: native 380px wide, zoomed; height chosen so the card fills the canvas minus a margin
+  const scale = Number(q.get('scale')) || 1.15;
+  const margin = Math.round(56 * k);
+  const frame = document.getElementById('panel');
+  frame.style.zoom = scale;
+  frame.style.height = `${Math.round((h - margin * 2) / scale)}px`;
+  const src = new URLSearchParams({ seed: 'demo', embed: '1', view: q.get('view') || 'capture' });
+  for (const key of ['open', 'workspace', 'select', 'collapse']) if (q.get(key)) src.set(key, q.get(key));
+  frame.src = `../fixtures/panel-dev.html?${src}`;
+</script>
+</body>
+</html>

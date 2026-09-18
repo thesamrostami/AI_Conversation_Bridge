@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.log
+
+# Web Store dashboard notes: kept locally, not published
+docs/STORE_LISTING.md
